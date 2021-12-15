@@ -3,14 +3,16 @@ package app
 import (
 	"github.com/gorilla/mux"
 	"net/http"
+	"restAPI/Service"
+	"restAPI/domain"
 )
 
 func Start() {
+	ch := CustomerHandler{
+		Service.NewCustomerService(domain.NewCustomerRepositoryDb()),
+	}
 	router := mux.NewRouter()
-	router.HandleFunc("/greet", greet).Methods(http.MethodGet)
-	router.HandleFunc("/customer", getAllCustomer).Methods(http.MethodGet)
-	router.HandleFunc("/customer/{id:[0-9]+}", getCustomer).Methods(http.MethodGet)
-	router.HandleFunc("/customer}", createCustomer).Methods(http.MethodPost)
+	router.HandleFunc("/customer", ch.getAllCustomer).Methods(http.MethodGet)
 
 	err := http.ListenAndServe("localhost:8080", router)
 	if err != nil {
