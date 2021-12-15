@@ -12,7 +12,7 @@ type CustomerRepositoryDb struct {
 	client *sql.DB
 }
 
-func (c CustomerRepositoryDb) GetAll() ([]Customer, error) {
+func (c CustomerRepositoryDb) GetAll() ([]Customer, *errs.AppError) {
 	findAllSQL := "SELECT customer_id , name , city , zipcode ,date_of_birth , status FROM customers"
 	rows, err := c.client.Query(findAllSQL)
 	if err != nil {
@@ -24,8 +24,8 @@ func (c CustomerRepositoryDb) GetAll() ([]Customer, error) {
 		err = rows.Scan(&customer.Id, &customer.Name, &customer.City, &customer.Zipcode,
 			&customer.DateOfBirth, &customer.Status)
 		if err != nil {
-			log.Println("Error: %v", err)
-			return nil, err
+			log.Printf("Error: %v\n", err)
+			return nil, errs.NewUnExpectedError("Error while getting customers")
 		}
 		customers = append(customers, customer)
 	}

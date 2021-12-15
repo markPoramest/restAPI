@@ -12,6 +12,6 @@ type Customer struct {
 }
 
 type CustomerRepository interface {
-	GetAll() ([]Customer, error)
+	GetAll() ([]Customer, *errs.AppError)
 	GetById(id int64) (*Customer, *errs.AppError)
 }
