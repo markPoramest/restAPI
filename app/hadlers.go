@@ -40,3 +40,12 @@ func getAllCustomer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+//create function getCustomer by id
+func getCustomer(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func createCustomer(w http.ResponseWriter, r *http.Request) {
+
+}
