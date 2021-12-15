@@ -3,6 +3,8 @@ package domain
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
+	"restAPI/errs"
 	"time"
 )
 
@@ -22,11 +24,29 @@ func (c CustomerRepositoryDb) GetAll() ([]Customer, error) {
 		err = rows.Scan(&customer.Id, &customer.Name, &customer.City, &customer.Zipcode,
 			&customer.DateOfBirth, &customer.Status)
 		if err != nil {
-			panic(err)
+			log.Println("Error: %v", err)
+			return nil, err
 		}
 		customers = append(customers, customer)
 	}
 	return customers, nil
+}
+
+func (c CustomerRepositoryDb) GetById(id int64) (*Customer, *errs.AppError) {
+	findByIdSQL := "SELECT customer_id , name , city , zipcode ,date_of_birth , status FROM customers WHERE customer_id = ?"
+	row := c.client.QueryRow(findByIdSQL, id)
+	var customer Customer
+	err := row.Scan(&customer.Id, &customer.Name, &customer.City, &customer.Zipcode,
+		&customer.DateOfBirth, &customer.Status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errs.NewNotFoundError("Customer not found")
+		} else {
+			log.Printf("Error: %v\n", err)
+			return nil, errs.NewUnExpectedError("Error while getting customer")
+		}
+	}
+	return &customer, nil
 }
 
 func NewCustomerRepositoryDb() CustomerRepositoryDb {

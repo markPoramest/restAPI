@@ -13,6 +13,7 @@ func Start() {
 	}
 	router := mux.NewRouter()
 	router.HandleFunc("/customer", ch.getAllCustomer).Methods(http.MethodGet)
+	router.HandleFunc("/customer/{id:[0-9]+}", ch.getCustomer).Methods(http.MethodGet)
 
 	err := http.ListenAndServe("localhost:8080", router)
 	if err != nil {
