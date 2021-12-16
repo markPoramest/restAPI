@@ -12,11 +12,21 @@ type CustomerRepositoryDb struct {
 	client *sql.DB
 }
 
-func (c CustomerRepositoryDb) GetAll() ([]Customer, *errs.AppError) {
-	findAllSQL := "SELECT customer_id , name , city , zipcode ,date_of_birth , status FROM customers"
-	rows, err := c.client.Query(findAllSQL)
+func (c CustomerRepositoryDb) GetAll(status string) ([]Customer, *errs.AppError) {
+	var findAllSQL string
+	var rows *sql.Rows
+	var err error
+	if status == "" {
+		findAllSQL = "SELECT customer_id , name , city , zipcode ,date_of_birth , status FROM customers"
+		rows, err = c.client.Query(findAllSQL)
+	} else {
+		findAllSQL = "select * from customers where status = ?"
+		rows, err = c.client.Query(findAllSQL, status)
+	}
+
 	if err != nil {
-		panic(err)
+		log.Printf("Error: %v\n", err)
+		return nil, errs.NewUnExpectedError("Error while fetching data from database")
 	}
 	customers := make([]Customer, 0)
 	for rows.Next() {
